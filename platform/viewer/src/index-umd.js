@@ -6,8 +6,10 @@ import 'regenerator-runtime/runtime';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App.js';
+import { ViewerLocalFileData } from './connectedComponents/ViewerLocalFileData';
 
 function installViewer(config, containerId = 'root', callback) {
+  log.info('asdfasdf');
   const container = document.getElementById(containerId);
 
   if (!container) {
@@ -19,4 +21,4 @@ function installViewer(config, containerId = 'root', callback) {
   return ReactDOM.render(<App config={config} />, container, callback);
 }
 
-export { App, installViewer };
+export { App, ViewerLocalFileData, installViewer };
