@@ -6,10 +6,9 @@ import 'regenerator-runtime/runtime';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App.js';
-import { ViewerLocalFileData } from './connectedComponents/ViewerLocalFileData';
+import ViewerLocalFileData from './connectedComponents/ViewerLocalFileData';
 
 function installViewer(config, containerId = 'root', callback) {
-  log.info('asdfasdf');
   const container = document.getElementById(containerId);
 
   if (!container) {
