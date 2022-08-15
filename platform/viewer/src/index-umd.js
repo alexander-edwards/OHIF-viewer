@@ -7,6 +7,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App.js';
 
+import filesToStudies from './lib/filesToStudies';
+import ConnectedViewer from './connectedComponents/ConnectedViewer';
+
 function installViewer(config, containerId = 'root', callback) {
   const container = document.getElementById(containerId);
 
@@ -19,4 +22,4 @@ function installViewer(config, containerId = 'root', callback) {
   return ReactDOM.render(<App config={config} />, container, callback);
 }
 
-export { App, installViewer };
+export { App, installViewer, filesToStudies, ConnectedViewer };

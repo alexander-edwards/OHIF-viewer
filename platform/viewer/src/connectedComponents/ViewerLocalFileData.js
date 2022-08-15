@@ -92,6 +92,31 @@ class ViewerLocalFileData extends Component {
     });
   };
 
+  updatedStudiesFromFile = async studyFiles => {
+    const studies = await filesToStudies(studyFiles);
+
+    return studies.map(study => {
+      const studyMetadata = new OHIFStudyMetadata(
+        study,
+        study.StudyInstanceUID
+      );
+      const sopClassHandlerModules =
+        extensionManager.modules['sopClassHandlerModule'];
+
+      study.displaySets =
+        study.displaySets ||
+        studyMetadata.createDisplaySets(sopClassHandlerModules);
+
+      studyMetadata.forEachDisplaySet(displayset => {
+        displayset.localFile = true;
+      });
+
+      studyMetadataManager.add(studyMetadata);
+
+      return study;
+    });
+  };
+
   render() {
     const onDrop = async acceptedFiles => {
       this.setState({ loading: true });
