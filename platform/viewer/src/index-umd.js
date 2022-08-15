@@ -6,7 +6,6 @@ import 'regenerator-runtime/runtime';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App.js';
-import ViewerLocalFileData from './connectedComponents/ViewerLocalFileData';
 
 function installViewer(config, containerId = 'root', callback) {
   const container = document.getElementById(containerId);
@@ -17,7 +16,7 @@ function installViewer(config, containerId = 'root', callback) {
     );
   }
 
-  return ReactDOM.render(<ViewerLocalFileData />, container, callback);
+  return ReactDOM.render(<App config={config} />, container, callback);
 }
 
-export { App, ViewerLocalFileData, installViewer };
+export { App, installViewer };

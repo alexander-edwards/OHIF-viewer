@@ -2,11 +2,8 @@ import React, { useState } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { ErrorBoundary, Icon } from '@ohif/ui';
-import { servicesManager } from './../../App';
 
 import './ErrorBoundaryDialog.css';
-
-const { UIModalService } = servicesManager.services;
 
 const ErrorBoundaryDialog = ({ context, children }) => {
   const handleOnError = (error, componentStack) => {
@@ -37,11 +34,6 @@ const ErrorBoundaryDialog = ({ context, children }) => {
         </div>
       );
     };
-
-    UIModalService.show({
-      content: ErrorDialog,
-      title: `Something went wrong in ${context}`,
-    });
   };
 
   const fallbackComponent = () => (
