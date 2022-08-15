@@ -17,7 +17,11 @@ function installViewer(config, containerId = 'root', callback) {
     );
   }
 
-  return ReactDOM.render(<App config={config} />, container, callback);
+  return ReactDOM.render(
+    <ViewerLocalFileData studies={[]} />,
+    container,
+    callback
+  );
 }
 
 export { App, ViewerLocalFileData, installViewer };
