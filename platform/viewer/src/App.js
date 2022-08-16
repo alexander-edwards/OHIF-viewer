@@ -8,8 +8,6 @@ import { hot } from 'react-hot-loader/root';
 
 import axios from 'axios';
 
-import { readFileSync } from 'fs';
-
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 
 import {
@@ -61,8 +59,6 @@ import store from './store';
 import WhiteLabelingContext from './context/WhiteLabelingContext';
 import UserManagerContext from './context/UserManagerContext';
 import { AppProvider, useAppContext, CONTEXTS } from './context/AppContext';
-
-import { JSZip } from 'jszip';
 
 /** ~~~~~~~~~~~~~ Application Setup */
 const commandsManagerConfig = {
@@ -192,6 +188,8 @@ class App extends Component {
     console.log('App dicom file ', this.state.dicomFile);
 
     //dicomFile = [];
+
+    if (!this.state.dicomFile) return <div></div>;
 
     if (this._userManager) {
       return (
