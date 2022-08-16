@@ -51,19 +51,27 @@ const linksDialogMessage = (onDrop, i18n) => {
 };
 
 class ViewerLocalFileData extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      studies: null,
+      loading: false,
+      error: null,
+    };
+    console.log('constructor props dicomFiles: ', this.props.dicomFiles);
+    this.studiesFromFiles(this.props.dicomFiles);
+  }
+
   static propTypes = {
     studies: PropTypes.array,
-  };
-
-  state = {
-    studies: null,
-    loading: false,
-    error: null,
+    dicomFiles: PropTypes.object,
   };
 
   updateStudies = studies => {
     // Render the viewer when the data is ready
     studyMetadataManager.purge();
+
+    console.log('updateStudies: ', studies);
 
     // Map studies to new format, update metadata manager?
     const updatedStudies = studies.map(study => {
@@ -87,6 +95,7 @@ class ViewerLocalFileData extends Component {
       return study;
     });
 
+    console.log('setting this state studies', updatedStudies);
     this.setState({
       studies: updatedStudies,
     });
@@ -115,6 +124,11 @@ class ViewerLocalFileData extends Component {
 
       return study;
     });
+  };
+
+  studiesFromFiles = async dicomFiles => {
+    const studies = await filesToStudies(dicomFiles);
+    return this.updateStudies(studies);
   };
 
   render() {

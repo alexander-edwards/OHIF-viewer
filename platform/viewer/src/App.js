@@ -6,6 +6,10 @@ import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { hot } from 'react-hot-loader/root';
 
+import axios from 'axios';
+
+import { readFileSync } from 'fs';
+
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 
 import {
@@ -58,6 +62,8 @@ import WhiteLabelingContext from './context/WhiteLabelingContext';
 import UserManagerContext from './context/UserManagerContext';
 import { AppProvider, useAppContext, CONTEXTS } from './context/AppContext';
 
+import { JSZip } from 'jszip';
+
 /** ~~~~~~~~~~~~~ Application Setup */
 const commandsManagerConfig = {
   getAppState: () => store.getState(),
@@ -96,6 +102,7 @@ class App extends Component {
       }),
     ]).isRequired,
     defaultExtensions: PropTypes.array,
+    dicomFileUrl: PropTypes.string,
   };
 
   static defaultProps = {
@@ -114,6 +121,10 @@ class App extends Component {
     super(props);
 
     const { config, defaultExtensions } = props;
+
+    this.state = {
+      dicomFile: {},
+    };
 
     const appDefaultConfig = {
       showStudyList: true,
@@ -160,6 +171,14 @@ class App extends Component {
     initWebWorkers();
   }
 
+  componentDidMount() {
+    axios.get(this.props.dicomFileUrl).then(res => {
+      console.log('res');
+      const dicomFile = res.data;
+      this.setState({ dicomFile: dicomFile });
+    });
+  }
+
   render() {
     const { whiteLabeling, routerBasename } = this._appConfig;
     const {
@@ -169,6 +188,10 @@ class App extends Component {
       MeasurementService,
       LoggerService,
     } = servicesManager.services;
+
+    console.log('App dicom file ', this.state.dicomFile);
+
+    //dicomFile = [];
 
     if (this._userManager) {
       return (
@@ -189,6 +212,7 @@ class App extends Component {
                               >
                                 <OHIFStandaloneViewer
                                   userManager={this._userManager}
+                                  dicomFiles={this.state.dicomFile}
                                 />
                               </ModalProvider>
                             </DialogProvider>
@@ -219,7 +243,9 @@ class App extends Component {
                           modal={OHIFModal}
                           service={UIModalService}
                         >
-                          <OHIFStandaloneViewer />
+                          <OHIFStandaloneViewer
+                            dicomFiles={this.state.dicomFile}
+                          />
                         </ModalProvider>
                       </DialogProvider>
                     </SnackbarProvider>

@@ -11,7 +11,7 @@ import filesToStudies from './lib/filesToStudies';
 import ConnectedViewer from './connectedComponents/ConnectedViewer';
 import ViewerLocalFileData from './connectedComponents/ViewerLocalFileData';
 
-function installViewer(config, containerId = 'root', callback) {
+function installViewer(config, containerId = 'root', callback, dicomFileUrl) {
   const container = document.getElementById(containerId);
 
   if (!container) {
@@ -20,7 +20,11 @@ function installViewer(config, containerId = 'root', callback) {
     );
   }
 
-  return ReactDOM.render(<App config={config} />, container, callback);
+  return ReactDOM.render(
+    <App config={config} dicomFileUrl={dicomFileUrl} />,
+    container,
+    callback
+  );
 }
 
 export {
