@@ -59,7 +59,7 @@ class ViewerLocalFileData extends Component {
       error: null,
     };
     console.log('constructor props dicomFiles: ', this.props.dicomFiles);
-    this.studiesFromFiles(this.props.dicomFiles);
+    this.studiesFromFiles([this.props.dicomFiles]);
   }
 
   static propTypes = {
