@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+/* eslint-disable no-console */
+import React, { PureComponent } from 'react';
 import { metadata, utils } from '@ohif/core';
 
 import ConnectedViewer from './ConnectedViewer.js';
@@ -8,6 +9,8 @@ import Dropzone from 'react-dropzone';
 import filesToStudies from '../lib/filesToStudies';
 import './ViewerLocalFileData.css';
 import { withTranslation } from 'react-i18next';
+
+import memoize from 'memoize-one';
 
 const { OHIFStudyMetadata } = metadata;
 const { studyMetadataManager } = utils;
@@ -50,7 +53,7 @@ const linksDialogMessage = (onDrop, i18n) => {
   );
 };
 
-class ViewerLocalFileData extends Component {
+class ViewerLocalFileData extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -59,6 +62,8 @@ class ViewerLocalFileData extends Component {
       error: null,
     };
     console.log('constructor props dicomFiles: ', this.props.dicomFiles);
+
+    // If files have been provided then use them as the studies
     this.studiesFromFiles([this.props.dicomFiles]);
   }
 
@@ -71,7 +76,7 @@ class ViewerLocalFileData extends Component {
     // Render the viewer when the data is ready
     studyMetadataManager.purge();
 
-    console.log('updateStudies: ', studies);
+    console.log('updateStudies memoised fn(): ', studies);
 
     // Map studies to new format, update metadata manager?
     const updatedStudies = studies.map(study => {
@@ -102,6 +107,7 @@ class ViewerLocalFileData extends Component {
   };
 
   updatedStudiesFromFile = async studyFiles => {
+    console.log('Updating studies from file');
     const studies = await filesToStudies(studyFiles);
 
     return studies.map(study => {
@@ -127,15 +133,38 @@ class ViewerLocalFileData extends Component {
   };
 
   studiesFromFiles = async dicomFiles => {
+    console.log('studiesFromFiles fn()');
     const studies = await filesToStudies(dicomFiles);
     return this.updateStudies(studies);
   };
 
+  static getDerivedStateFromProps(props, state) {
+    return {
+      dicomFiles: props.dicomFiles,
+    };
+    // console.log('getDerivedStateFromProps fn()', props.dicomFiles);
+    // if (
+    //   Object.keys(props.dicomFiles).length !== 0 &&
+    //   props.dicomFiles !== state.dicomFiles
+    // ) {
+    //   console.log('Not the same: ', props.dicomFiles, state.dicomFiles);
+    //   this.studiesFromFiles([props.dicomFiles]);
+    //   return {
+    //     dicomFiles: props.dicomFiles,
+    //   };
+    // }
+    // return null;
+  }
+
+  handleChange;
+
   render() {
     const onDrop = async acceptedFiles => {
+      console.log('onDrop fn()');
       this.setState({ loading: true });
 
-      const studies = await filesToStudies([acceptedFiles]);
+      console.log('acceptedFiles', acceptedFiles);
+      const studies = await filesToStudies(acceptedFiles);
       const updatedStudies = this.updateStudies(studies);
 
       if (!updatedStudies) {

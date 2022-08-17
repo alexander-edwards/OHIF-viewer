@@ -168,13 +168,13 @@ class App extends Component {
   }
 
   componentDidMount() {
-    console.log('mounting');
+    console.log('App componentDidMount fn()');
     const blobUrl = this.props.dicomFileUrl;
     const config = { responseType: 'blob' };
     axios.get(blobUrl, config).then(response => {
       const dicomFile = new File([response.data], 'dicomFile');
       this.setState({ dicomFile: dicomFile });
-      console.log('res');
+      console.log('Successfully got dicom file: ', dicomFile);
     });
   }
 
