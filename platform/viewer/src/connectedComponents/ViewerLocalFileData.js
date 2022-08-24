@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { metadata, utils } from '@ohif/core';
 
 import ConnectedViewer from './ConnectedViewer.js';
@@ -10,10 +10,12 @@ import filesToStudies from '../lib/filesToStudies';
 import './ViewerLocalFileData.css';
 import { withTranslation } from 'react-i18next';
 
-import memoize from 'memoize-one';
+import axios from 'axios';
 
 const { OHIFStudyMetadata } = metadata;
 const { studyMetadataManager } = utils;
+
+const USE_TEST_VALUE = true;
 
 const dropZoneLinkDialog = (onDrop, i18n, dir) => {
   return (
@@ -53,23 +55,23 @@ const linksDialogMessage = (onDrop, i18n) => {
   );
 };
 
-class ViewerLocalFileData extends PureComponent {
+class ViewerLocalFileData extends Component {
   constructor(props) {
     super(props);
     this.state = {
       studies: null,
       loading: false,
       error: null,
+      dicomFile: null,
     };
-    console.log('constructor props dicomFiles: ', this.props.dicomFiles);
+    console.log('constructor props dicomFileUrl: ', this.props.dicomFileUrl);
 
     // If files have been provided then use them as the studies
-    this.studiesFromFiles([this.props.dicomFiles]);
   }
 
   static propTypes = {
     studies: PropTypes.array,
-    dicomFiles: PropTypes.object,
+    dicomFileUrl: PropTypes.string,
   };
 
   updateStudies = studies => {
@@ -138,25 +140,59 @@ class ViewerLocalFileData extends PureComponent {
     return this.updateStudies(studies);
   };
 
-  static getDerivedStateFromProps(props, state) {
-    return {
-      dicomFiles: props.dicomFiles,
-    };
-    // console.log('getDerivedStateFromProps fn()', props.dicomFiles);
-    // if (
-    //   Object.keys(props.dicomFiles).length !== 0 &&
-    //   props.dicomFiles !== state.dicomFiles
-    // ) {
-    //   console.log('Not the same: ', props.dicomFiles, state.dicomFiles);
-    //   this.studiesFromFiles([props.dicomFiles]);
-    //   return {
-    //     dicomFiles: props.dicomFiles,
-    //   };
-    // }
-    // return null;
+  componentDidMount() {
+    console.log('componentDidMount fn()');
+    this.getNewFiles();
   }
 
-  handleChange;
+  componentDidUpdate(prevProps) {
+    if (this.props.dicomFileUrl !== prevProps.dicomFileUrl) {
+      console.log('componentDidUpdate fn()');
+      this.getNewFiles();
+    }
+  }
+
+  getNewFiles = async () => {
+    const config = { responseType: 'blob' };
+
+    const blobUrls = this.getUrls();
+    const filesToLoad = [];
+
+    console.log('blobUrls to get: ', blobUrls);
+
+    // Get the file of each url needed
+    for (var i = 0; i < blobUrls.length; i++) {
+      const blobUrl = blobUrls[i];
+      await axios.get(blobUrl, config).then(response => {
+        const newDicomFile = new File([response.data], 'dicomFile');
+        console.log('Successfully got dicom file: ', newDicomFile);
+        filesToLoad.push(newDicomFile);
+      });
+    }
+
+    console.log('filesToLoad ', filesToLoad);
+
+    // Transform each file into a study
+    this.studiesFromFiles(filesToLoad);
+  };
+
+  getUrls = () => {
+    const blobUrls = [];
+
+    // If we want to test using an example dicom in /public/
+    if (USE_TEST_VALUE) {
+      blobUrls.push(
+        'http://localhost:3000/radiology_example/LUNG1-021_1-001.dcm'
+      );
+      blobUrls.push(
+        'http://localhost:3000/radiology_example/LUNG1-021_1-002.dcm'
+      );
+      return blobUrls;
+    }
+
+    blobUrls.push(this.props.dicomFileUrl);
+    return blobUrls;
+  };
 
   render() {
     const onDrop = async acceptedFiles => {

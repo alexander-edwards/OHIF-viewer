@@ -97,14 +97,15 @@ class ViewerMain extends Component {
         viewportPane.StudyInstanceUID &&
         viewportPane.displaySetInstanceUID;
 
-      if (isNonEmptyViewport) {
-        dirtyViewportPanes.push({
-          StudyInstanceUID: viewportPane.StudyInstanceUID,
-          displaySetInstanceUID: viewportPane.displaySetInstanceUID,
-        });
+      // Commented out due to https://github.com/OHIF/Viewers/issues/1911
+      // if (isNonEmptyViewport) {
+      //   dirtyViewportPanes.push({
+      //     StudyInstanceUID: viewportPane.StudyInstanceUID,
+      //     displaySetInstanceUID: viewportPane.displaySetInstanceUID,
+      //   });
 
-        continue;
-      }
+      //   continue;
+      // }
 
       const foundDisplaySet =
         displaySets.find(

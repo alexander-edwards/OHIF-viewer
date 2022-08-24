@@ -39,7 +39,7 @@ class OHIFStandaloneViewer extends Component {
     setContext: PropTypes.func,
     userManager: PropTypes.object,
     location: PropTypes.object,
-    dicomFiles: PropTypes.object,
+    dicomFileUrl: PropTypes.string,
   };
 
   componentDidMount() {
@@ -173,7 +173,7 @@ class OHIFStandaloneViewer extends Component {
       })
     );
 
-    console.log('standalone viewer dicom ', this.props.dicomFiles);
+    console.log('standalone viewer dicom ', this.props.dicomFileUrl);
 
     return (
       <>
@@ -214,7 +214,7 @@ class OHIFStandaloneViewer extends Component {
                   ) : (
                     <ErrorBoundary context={match.url}>
                       <Component
-                        dicomFiles={this.props.dicomFiles}
+                        dicomFileUrl={this.props.dicomFileUrl}
                         match={match}
                         location={this.props.location}
                       />

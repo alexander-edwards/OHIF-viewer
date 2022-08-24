@@ -100,6 +100,7 @@ const ViewportDownloadForm = ({
    * @param {string} dimension - "height" | "width"
    */
   const onDimensionsChange = (event, dimension) => {
+    console.log('onDimensionsChange fn()');
     const oppositeDimension = dimension === 'height' ? 'width' : 'height';
     const sanitizedTargetValue = event.target.value.replace(/\D/, '');
     const isEmpty = sanitizedTargetValue === '';
@@ -149,6 +150,7 @@ const ViewportDownloadForm = ({
   };
 
   const onKeepAspectToggle = () => {
+    console.log('onKeepAspectToggle fn()');
     const { width, height } = dimensions;
     const aspectMultiplier = { ...aspectMultiplier };
     if (!keepAspect) {
@@ -163,6 +165,7 @@ const ViewportDownloadForm = ({
 
   const validSize = value => (value >= minimumSize ? value : minimumSize);
   const loadAndUpdateViewports = useCallback(async () => {
+    console.log('loadAndUpdateViewports fn()');
     const { width: scaledWidth, height: scaledHeight } = await loadImage(
       activeViewport,
       viewportElement,
@@ -200,20 +203,21 @@ const ViewportDownloadForm = ({
       height: validSize(viewportElementHeight),
     }));
   }, [
+    loadImage,
     activeViewport,
     viewportElement,
-    showAnnotations,
-    loadImage,
+    dimensions.width,
+    dimensions.height,
     toggleAnnotations,
+    showAnnotations,
+    validSize,
     updateViewportPreview,
-    fileType,
     downloadCanvas.ref,
-    minimumSize,
-    maximumSize,
-    viewportElementDimensions,
+    fileType,
   ]);
 
   useEffect(() => {
+    console.log('useEffect fn()');
     enableViewport(viewportElement);
 
     return () => {
@@ -242,9 +246,11 @@ const ViewportDownloadForm = ({
     downloadCanvas.ref,
     minimumSize,
     maximumSize,
+    loadAndUpdateViewports,
   ]);
 
   useEffect(() => {
+    console.log('useEffect2 fn()');
     const { width, height } = dimensions;
     const hasError = {
       width: width < minimumSize,

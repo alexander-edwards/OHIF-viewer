@@ -6,8 +6,6 @@ import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { hot } from 'react-hot-loader/root';
 
-import axios from 'axios';
-
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 
 import {
@@ -118,10 +116,6 @@ class App extends Component {
 
     const { config, defaultExtensions } = props;
 
-    this.state = {
-      dicomFile: {},
-    };
-
     const appDefaultConfig = {
       showStudyList: true,
       cornerstoneExtensionConfig: {},
@@ -167,17 +161,6 @@ class App extends Component {
     initWebWorkers();
   }
 
-  componentDidMount() {
-    console.log('App componentDidMount fn()');
-    const blobUrl = this.props.dicomFileUrl;
-    const config = { responseType: 'blob' };
-    axios.get(blobUrl, config).then(response => {
-      const dicomFile = new File([response.data], 'dicomFile');
-      this.setState({ dicomFile: dicomFile });
-      console.log('Successfully got dicom file: ', dicomFile);
-    });
-  }
-
   render() {
     const { whiteLabeling, routerBasename } = this._appConfig;
     const {
@@ -188,11 +171,7 @@ class App extends Component {
       LoggerService,
     } = servicesManager.services;
 
-    console.log('App dicom file ', this.state.dicomFile);
-
-    //dicomFile = [];
-
-    if (!this.state.dicomFile) return <div></div>;
+    console.log('App dicom file url', this.props.dicomFileUrl);
 
     if (this._userManager) {
       return (
@@ -213,7 +192,7 @@ class App extends Component {
                               >
                                 <OHIFStandaloneViewer
                                   userManager={this._userManager}
-                                  dicomFiles={this.state.dicomFile}
+                                  dicomFileUrl={this.props.dicomFileUrl}
                                 />
                               </ModalProvider>
                             </DialogProvider>
@@ -245,7 +224,7 @@ class App extends Component {
                           service={UIModalService}
                         >
                           <OHIFStandaloneViewer
-                            dicomFiles={this.state.dicomFile}
+                            dicomFileUrl={this.props.dicomFileUrl}
                           />
                         </ModalProvider>
                       </DialogProvider>
